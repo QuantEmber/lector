@@ -1,0 +1,31 @@
+# REFERENCE COPY of the fdroiddata metadata for Lector. The real file goes in the
+# fdroiddata repo at metadata/io.github.quantember.lector.yml (no comments there).
+#
+# ⚠ APPLICATION ID (L-GATE-2): this uses io.github.quantember.lector — the F-Droid-safe
+# id derived from Brian's GitHub Pages domain (quantember.github.io). The app currently
+# builds as app.lector; F-Droid may flag app.lector because it maps to the domain
+# lector.app, which Brian does not control. Changing it is applicationId-only (keep the
+# code namespace app.lector) and free now since nothing is published. Confirm before
+# submitting, then rebuild + retag.
+Categories:
+  - Reading
+License: GPL-3.0-only
+AuthorName: Brian Kilgore
+WebSite: https://github.com/QuantEmber/lector
+SourceCode: https://github.com/QuantEmber/lector
+IssueTracker: https://github.com/QuantEmber/lector/issues
+RepoType: git
+Repo: https://github.com/QuantEmber/lector.git
+
+Builds:
+  - versionName: 0.6.0
+    versionCode: 9
+    commit: v0.6.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags
+CurrentVersion: 0.6.0
+CurrentVersionCode: 9

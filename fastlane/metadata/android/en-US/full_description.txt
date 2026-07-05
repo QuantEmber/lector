@@ -1,0 +1,14 @@
+Lector reads your documents aloud — beautifully, privately, and completely free.
+
+Open a TXT, Markdown, EPUB, or PDF — a single file or a whole folder — or paste text, or share to Lector from any app. Lector turns it into a clean, paged reader and reads it to you using your device's own voices, highlighting the current sentence as it goes.
+
+Features:
+* Reads TXT, Markdown, EPUB, PDF, and other text files
+* A real library: scan a folder and Lector remembers your books
+* Picks up where you left off in every document
+* Page view with a slider to move through a whole book
+* Adjustable speed, sleep timer, and background-friendly controls
+
+Private by design: no ads, no accounts, no trackers, no network access, and no permissions at all. Your text never leaves your device. Reading aloud uses the text-to-speech engine already on your phone.
+
+Free and open source (GPLv3).

@@ -1,0 +1,1 @@
+Paged reader with a book-length scrubber, persistent library (recursive folder scan), recents and resume position, PDF and more text formats, sleep timer. Reads with your device's voices — private, offline, zero permissions.

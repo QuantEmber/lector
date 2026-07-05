@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive-icon foreground: an open book in warm paper cream, centered in the
+     safe zone. The gap between the two pages lets the brown background read as
+     the spine. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- left page -->
+    <path
+        android:fillColor="#FBF6EE"
+        android:pathData="M53,42 C42,37 32,37 22,41 L22,68 C32,64 42,64 53,69 Z" />
+    <!-- right page -->
+    <path
+        android:fillColor="#FBF6EE"
+        android:pathData="M55,42 C66,37 76,37 86,41 L86,68 C76,64 66,64 55,69 Z" />
+    <!-- page lines (subtle, leather tint) -->
+    <path
+        android:fillColor="#D9B78A"
+        android:pathData="M28,47 C36,45 44,45 50,48 L50,50 C44,47 36,47 28,49 Z" />
+    <path
+        android:fillColor="#D9B78A"
+        android:pathData="M58,48 C64,45 72,45 80,47 L80,49 C72,47 64,47 58,50 Z" />
+</vector>
