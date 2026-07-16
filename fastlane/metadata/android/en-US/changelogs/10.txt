@@ -1,0 +1,1 @@
+Maintenance release. No changes to how Lector reads — this build makes the APK reproducible, so anyone can rebuild it from source and verify byte-for-byte that the app you install is the app that was published. Still private, offline, zero permissions.

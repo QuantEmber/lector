@@ -35,8 +35,8 @@ android {
         applicationId = "io.github.quantember.lector"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "0.6.0"
+        versionCode = 10
+        versionName = "0.6.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -44,6 +44,12 @@ android {
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // Required for F-Droid reproducible builds: AGP otherwise embeds
+            // META-INF/version-control-info.textproto, whose contents depend on the
+            // build environment's git checkout. A build made outside a git tree writes
+            // NO_SUPPORTED_VCS_FOUND while F-Droid's writes the commit hash, so the
+            // APKs can never match. Omitting the file entirely makes both sides equal.
+            vcsInfo { include = false }
             if (keystorePropsFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
