@@ -18,6 +18,14 @@ android {
     namespace = "app.lector"
     compileSdk = 35
 
+    // AGP embeds a Google Play dependency-reporting blob in the APK signing block by
+    // default. F-Droid's `check apk` scanner rejects any extra signing block, and it is
+    // Play-oriented metadata a FOSS build has no use for. Off in both outputs.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     signingConfigs {
         if (keystorePropsFile.exists()) {
             create("release") {
@@ -35,8 +43,8 @@ android {
         applicationId = "io.github.quantember.lector"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "0.6.1"
+        versionCode = 11
+        versionName = "0.6.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

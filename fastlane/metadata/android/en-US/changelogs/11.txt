@@ -1,0 +1,1 @@
+Maintenance release. No changes to how Lector reads. Removes a Google Play dependency-reporting blob that the build tools embed by default — it has no purpose in a free-software build, and leaving it out keeps the APK reproducible and independently verifiable. Still private, offline, zero permissions.
