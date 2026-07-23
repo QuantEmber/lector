@@ -1,0 +1,1 @@
+Bugfix: opening Voice no longer crashes when the device has multiple system TTS voices that share a short name (for example several Chinese voices all named "zh"). Voice ids are now unique per language/locale. Still private, offline, zero permissions.

@@ -489,11 +489,16 @@ private fun VoiceDialog(voices: List<VoiceOption>, selectedId: String?, onSelect
         title = { Text("Voice") },
         text = {
             LazyColumn(Modifier.heightIn(max = 420.dp)) {
-                item {
+                item(key = "default-system") {
                     ChoiceRow("Default (system)", selectedId == null) { onSelect(null) }
                     HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
                 }
-                items(voices, key = { it.id }) { v -> ChoiceRow(v.label, selectedId == v.id) { onSelect(v.id) } }
+                // distinctBy + key: Android Voice.name is not unique (e.g. multiple
+                // "zh" voices) — duplicate keys crash Compose ("Key zh was already used").
+                // SystemTtsEngine already mints unique ids; this is defense in depth.
+                items(voices.distinctBy { it.id }, key = { it.id }) { v ->
+                    ChoiceRow(v.label, selectedId == v.id) { onSelect(v.id) }
+                }
             }
         },
     )

@@ -245,7 +245,12 @@ class SystemTtsEngine(
         val voices: Set<Voice> = runCatching { tts.voices }.getOrNull() ?: emptySet()
         // Build a base label (language + quality) per voice, then disambiguate
         // any collisions with a trailing counter — clearer than raw engine names.
-        data class Raw(val id: String, val base: String, val language: String)
+        //
+        // IMPORTANT: Android Voice.name is NOT globally unique. Some engines reuse
+        // short language codes (e.g. "zh") across locales. Using name alone as the
+        // Compose LazyColumn key crashed F-Droid review ("Key zh was already used").
+        // Id form: "<engineName>|<BCP-47 tag>" (see uniqueVoiceId / resolveVoice).
+        data class Raw(val engineName: String, val localeTag: String, val base: String, val language: String)
         val raws = voices.asSequence()
             .filter { it.features?.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED) != true }
             .filter { !it.isNetworkConnectionRequired } // offline-first (ADR-003)
@@ -259,28 +264,41 @@ class SystemTtsEngine(
                     voice.quality >= Voice.QUALITY_HIGH -> " — high quality"
                     else -> ""
                 }
-                Raw(voice.name, "$locale$quality", langLabel)
+                Raw(
+                    engineName = voice.name.orEmpty().ifBlank { loc.toLanguageTag() },
+                    localeTag = loc.toLanguageTag(),
+                    base = "$locale$quality",
+                    language = langLabel,
+                )
             }
-            .sortedWith(compareBy({ it.language }, { it.base }, { it.id }))
+            // Same engine name + locale is the same selectable voice for our purposes.
+            .distinctBy { it.engineName to it.localeTag }
+            .sortedWith(compareBy({ it.language }, { it.base }, { it.engineName }, { it.localeTag }))
             .toList()
 
-        val counts = raws.groupingBy { it.base }.eachCount()
-        val seen = HashMap<String, Int>()
+        val labelCounts = raws.groupingBy { it.base }.eachCount()
+        val seenLabels = HashMap<String, Int>()
+        val usedIds = HashSet<String>()
         _voices.value = raws.map { raw ->
-            val label = if (counts.getValue(raw.base) > 1) {
-                val n = (seen[raw.base] ?: 0) + 1
-                seen[raw.base] = n
+            val label = if (labelCounts.getValue(raw.base) > 1) {
+                val n = (seenLabels[raw.base] ?: 0) + 1
+                seenLabels[raw.base] = n
                 "${raw.base} · $n"
             } else {
                 raw.base
             }
-            VoiceOption(id = raw.id, label = label, language = raw.language)
+            VoiceOption(
+                id = uniqueVoiceId(raw.engineName, raw.localeTag, usedIds),
+                label = label,
+                language = raw.language,
+            )
         }
     }
 
     private fun applySelectedVoice() {
         val id = _selectedVoiceId.value ?: return
-        val match = runCatching { tts.voices }.getOrNull()?.firstOrNull { it.name == id }
+        val all = runCatching { tts.voices }.getOrNull().orEmpty()
+        val match = resolveVoice(all, id)
         if (match != null) {
             runCatching { tts.voice = match }
         } else {
@@ -374,5 +392,39 @@ class SystemTtsEngine(
         // Sentences queued ahead of the one playing. Small enough that seek/play
         // stay instant on huge books; large enough to hide refill latency.
         const val WINDOW = 6
+
+        /** Separates engine Voice.name from BCP-47 locale in persisted ids. */
+        const val ID_SEP = "|"
+
+        /**
+         * Stable, list-unique id for a system voice.
+         * Always includes the locale tag so engines that reuse short names
+         * (e.g. "zh" for both zh-CN and zh-TW) never collide in Compose keys.
+         */
+        fun uniqueVoiceId(engineName: String, localeTag: String, used: MutableSet<String>): String {
+            val base = if (localeTag.isBlank()) engineName else "$engineName$ID_SEP$localeTag"
+            if (used.add(base)) return base
+            var n = 2
+            while (!used.add("$base#$n")) n++
+            return "$base#$n"
+        }
+
+        /**
+         * Resolve a persisted/selected id back to a [Voice].
+         * Accepts:
+         *  - new form: "engineName|bcp47" (optionally "#n" suffix)
+         *  - legacy form: plain engineName (pre-fix prefs / F-Droid ≤ v0.6.2)
+         */
+        fun resolveVoice(voices: Collection<Voice>, id: String): Voice? {
+            val bare = id.substringBefore('#') // strip rare disambiguator
+            val sep = bare.indexOf(ID_SEP)
+            if (sep < 0) {
+                return voices.firstOrNull { it.name == bare }
+            }
+            val name = bare.substring(0, sep)
+            val tag = bare.substring(sep + 1)
+            return voices.firstOrNull { it.name == name && it.locale.toLanguageTag() == tag }
+                ?: voices.firstOrNull { it.name == name } // soft fallback if locale moved
+        }
     }
 }
