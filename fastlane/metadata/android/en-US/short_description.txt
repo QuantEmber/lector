@@ -1,1 +1,1 @@
-Read any text, PDF, or EPUB aloud — free, private, offline.
+Text to speech (TTS) reader for TXT, PDF & EPUB: free, private, offline

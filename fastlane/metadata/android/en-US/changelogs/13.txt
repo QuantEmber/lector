@@ -1,0 +1,1 @@
+Store listing: description now says plainly that Lector is a text to speech (TTS) reader, so it shows up when you search for TTS. No app behavior changes. Still private, offline, zero permissions.
